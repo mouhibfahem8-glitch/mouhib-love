@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pour mon Amour ❤️</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Montserrat:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff4b6e;
+            --secondary: #ff758c;
+            --accent: #f8bbd0;
+            --glass: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #f48fb1 100%);
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Hearts */
+        .bg-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-heart {
+            position: absolute;
+            color: var(--primary);
+            opacity: 0.3;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 0.5;
+            }
+
+            80% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateY(-20vh) scale(1.5) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 500px;
+            width: 90%;
+            padding: 40px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 75, 110, 0.2);
+            text-align: center;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gallery {
+            width: 100%;
+            height: 350px;
+            position: relative;
+            margin-bottom: 30px;
+            perspective: 1000px;
+        }
+
+        .photo-frame {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 5px solid white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.5s ease;
+            cursor: pointer;
+            background: #fff;
+            /* Fond blanc pour les bords si l'image est plus étroite */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* Assure que toute la photo est visible */
+        }
+
+        .frame-1 {
+            transform: rotate(-5deg) scale(0.95);
+            z-index: 3;
+        }
+
+        .frame-2 {
+            transform: rotate(3deg) scale(0.95);
+            z-index: 2;
+        }
+
+        .frame-3 {
+            transform: rotate(-2deg) scale(0.95);
+            z-index: 1;
+        }
+
+        .frame-active {
+            transform: rotate(0deg) scale(1.05) translateZ(50px);
+            z-index: 10 !important;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 30px;
+            min-height: 100px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(255, 75, 110, 0.2);
+        }
+
+        #yesBtn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            z-index: 5;
+        }
+
+        #yesBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 25px rgba(255, 75, 110, 0.4);
+        }
+
+        #noBtn {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--accent);
+            position: absolute;
+            transition: none;
+            /* We'll handle movement with JS */
+        }
+
+        /* Success Reveal */
+        #success-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #success-layer h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 101;
+        }
+
+        .music-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--glass);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+            z-index: 1000;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .container {
+                padding: 25px;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+
+            .gallery {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-toggle" id="musicToggle">🔇</div>
+
+    <div class="bg-hearts" id="bgHearts"></div>
+
+    <div class="container" id="mainContainer">
+        <div class="gallery">
+            <div class="photo-frame frame-1 frame-active" onclick="nextPhoto(1)">
+                <img src="photo1.jpg" alt="Notre moment ❤️">
+            </div>
+            <div class="photo-frame frame-2" onclick="nextPhoto(2)">
+                <img src="photo2.jpg" alt="Toi et moi ❤️">
+            </div>
+            <div class="photo-frame frame-3" onclick="nextPhoto(3)">
+                <img src="photo3.jpg" alt="Plus beau souvenir ❤️">
+            </div>
+        </div>
+
+        <h1>Mon Amour Rawaand sahha chribtek <img src="https://emojicdn.elk.sh/❤️?style=apple"
+                style="width: 1em; height: 1em; vertical-align: middle;" alt="❤️"></h1>
+        <div class="message" id="typedMessage"></div>
+
+        <div class="buttons">
+            <button class="btn" id="yesBtn">OUI ! <img src="https://emojicdn.elk.sh/❤️?style=apple"
+                    style="width: 1em; height: 1em; vertical-align: middle;" alt="❤️"></button>
+            <button class="btn" id="noBtn">Non <img src="https://emojicdn.elk.sh/🫣?style=apple"
+                    style="width: 1em; height: 1em; vertical-align: middle;" alt="🫣"></button>
+        </div>
+    </div>
+
+    <div id="success-layer">
+        <h2>Merci mon Cœur ! <img src="https://emojicdn.elk.sh/❤️?style=apple"
+                style="width: 1em; height: 1em; vertical-align: middle;" alt="❤️"></h2>
+        <p>Tu me rends la personne la plus heureuse au monde.</p>
+        <p style="margin-top: 20px; font-style: italic;">Je t'aime infiniment <img
+                src="https://emojicdn.elk.sh/✨?style=apple" style="width: 1em; height: 1em; vertical-align: middle;"
+                alt="✨"></p>
+        <button class="btn" onclick="location.reload()" style="margin-top: 30px;">Revoir <img
+                src="https://emojicdn.elk.sh/❤️?style=apple" style="width: 1em; height: 1em; vertical-align: middle;"
+                alt="❤️"></button>
+    </div>
+
+    <!-- JS Libraries via CDN for complex effects if needed, but keeping it vanilla for speed -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        // 1. Photo Gallery Logic
+        let currentFrame = 1;
+        const totalFrames = 3;
+
+        function nextPhoto() {
+            const frames = document.querySelectorAll('.photo-frame');
+            frames.forEach(f => f.classList.remove('frame-active'));
+
+            currentFrame = (currentFrame % totalFrames) + 1;
+            document.querySelector(`.frame-${currentFrame}`).classList.add('frame-active');
+        }
+
+        // Auto transition photos
+        setInterval(nextPhoto, 4000);
+
+        // Helper for Apple Emojis
+        function getAppleEmoji(emoji) {
+            return `<img src="https://emojicdn.elk.sh/${emoji}?style=apple" style="width: 1.2em; height: 1.2em; vertical-align: middle;" alt="${emoji}">`;
+        }
+
+        // 2. Background Hearts
+        function createBgHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('bg-heart');
+            heart.innerHTML = getAppleEmoji('❤️');
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            document.getElementById('bgHearts').appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 7000);
+        }
+        setInterval(createBgHeart, 400);
+
+        // 3. No Button Escape & Jittery Move
+        const noBtn = document.getElementById('noBtn');
+        const container = document.getElementById('mainContainer');
+
+        // Jittery animation (always moving slightly)
+        let angleX = 0;
+        let angleY = 0;
+        function jitterNo() {
+            if (!noBtn.style.left) {
+                noBtn.style.left = '60%';
+                noBtn.style.top = '80%';
+            }
+            angleX += 0.08;
+            angleY += 0.06;
+            const xOffset = Math.sin(angleX) * 15;
+            const yOffset = Math.cos(angleY) * 15;
+            noBtn.style.transform = `translate(${xOffset}px, ${yOffset}px) rotate(${Math.sin(angleX) * 5}deg)`;
+            requestAnimationFrame(jitterNo);
+        }
+        jitterNo();
+
+        function moveNo(e) {
+            const rect = container.getBoundingClientRect();
+            const maxX = rect.width - noBtn.offsetWidth - 20;
+            const maxY = rect.height - noBtn.offsetHeight - 20;
+
+            let randX, randY;
+            let attempts = 0;
+            const mouseX = e ? (e.clientX || (e.touches ? e.touches[0].clientX : null)) : null;
+            const mouseY = e ? (e.clientY || (e.touches ? e.touches[0].clientY : null)) : null;
+
+            do {
+                randX = Math.random() * maxX;
+                randY = Math.random() * maxY;
+                attempts++;
+            } while (attempts < 15 && mouseX && Math.sqrt(Math.pow(randX - (mouseX - rect.left), 2) + Math.pow(randY - (mouseY - rect.top), 2)) < 180);
+
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = randX + 'px';
+            noBtn.style.top = randY + 'px';
+        }
+
+        // Esprit de contradiction : move even on any pointer activity
+        noBtn.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            moveNo(e);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            const btnRect = noBtn.getBoundingClientRect();
+            const dist = Math.sqrt(Math.pow(e.clientX - (btnRect.left + btnRect.width / 2), 2) + Math.pow(e.clientY - (btnRect.top + btnRect.height / 2), 2));
+            if (dist < 120) moveNo(e);
+        });
+
+        noBtn.addEventListener('mouseover', (e) => moveNo(e));
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveNo(e.touches[0]);
+        }, { passive: false });
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveNo(e);
+        });
+
+        // 4. Yes Button Logic
+        const successLayer = document.getElementById('success-layer');
+        document.getElementById('yesBtn').addEventListener('click', () => {
+            successLayer.style.display = 'flex';
+
+            // Play sound if possible
+            const audio = document.getElementById('bgMusic');
+            audio.play().catch(() => console.log("Interaction needed for audio"));
+
+            // Confetti Blast
+            const duration = 15 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function () {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+                // since particles fall down, start a bit higher than average
+                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+            }, 250);
+        });
+
+        // 5. Music Toggle
+        const music = document.getElementById('bgMusic');
+        const toggle = document.getElementById('musicToggle');
+        let isPlaying = false;
+
+        toggle.addEventListener('click', () => {
+            if (isPlaying) {
+                music.pause();
+                toggle.innerHTML = '🔇';
+            } else {
+                music.play().catch(e => console.error("Erreur lecture:", e));
+                toggle.innerHTML = '🎵';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // 6. Typewriter Effect
+        const messageText = "Chaque jour passé à tes côtés est un cadeau précieux..Tu es mon sourire, ma paix et mon bonheur. Veux-tu rester avec moi pour toujours ? 💍 ❤️";
+        const typedMessage = document.getElementById('typedMessage');
+        let i = 0;
+
+        function typeWriter() {
+            if (i < messageText.length) {
+                let char = messageText[i];
+                let content = "";
+
+                // Detection emojis (multi-caractères)
+                if (messageText.substring(i, i + 2) === "❤️") {
+                    content = getAppleEmoji("❤️");
+                    i += 2;
+                } else if (messageText.substring(i, i + 2) === "💍") {
+                    content = getAppleEmoji("💍");
+                    i += 2;
+                } else if (messageText.substring(i, i + 2) === "✨") {
+                    content = getAppleEmoji("✨");
+                    i += 2;
+                } else {
+                    content = char;
+                    i++;
+                }
+
+                // On enlève le curseur précédent s'il existe
+                const cursor = '<span style="border-right: 2px solid var(--primary); animation: blink 0.7s infinite;">|</span>';
+                typedMessage.innerHTML = typedMessage.innerHTML.replace(cursor, '') + content + cursor;
+
+                setTimeout(typeWriter, 50 - Math.random() * 20);
+            } else {
+                // On garde le texte final propre
+                typedMessage.innerHTML = typedMessage.innerHTML.replace('<span style="border-right: 2px solid var(--primary); animation: blink 0.7s infinite;">|</span>', '');
+            }
+        }
+
+        // Add blink animation style
+        const style = document.createElement('style');
+        style.innerHTML = '@keyframes blink { 0%, 100% {opacity: 1} 50% {opacity: 0} }';
+        document.head.appendChild(style);
+
+        // Start typing after a short delay
+        setTimeout(typeWriter, 1000);
+
+        // Optional: Pre-position No button
+        noBtn.style.left = '60%';
+        noBtn.style.bottom = '40px';
+
+    </script>
+</body>
+
+</html>
